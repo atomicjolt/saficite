@@ -22,10 +22,14 @@ require "aws-sdk-resources"
 @sources = "/#{Dir.pwd}/sources"
 @archive_dir = "/#{Dir.pwd}/unzipped_archives"
 @gz_files = []
-@bucket = ARGV[0]     # (e.g. openlmshost.datamigration)
-@access_key = ARGV[1] # access key
-@secret_key = ARGV[2] # secret key
-@region = ARGV[3]     # region (e.g. 'us-east-1')
+
+def config
+  @config ||= if File.exists? "config.yml"
+                YAML::safe_load(File.read("config.yml"), [Symbol])
+              else
+                {}
+              end
+end
 
 def extract_zip_archives(file)
   folder = "#{@archive_dir}/#{file}"
@@ -68,15 +72,15 @@ end
 
 def upload_files
   Aws.config.update(
-    access_key_id: @access_key,
-    secret_access_key: @secret_key,
+    access_key_id: config[:access_key],
+    secret_access_key: config[:secret_key],
   )
-  s3 = Aws::S3::Resource.new(region: @region)
+  s3 = Aws::S3::Resource.new(region: config[:region])
   index = 0
 
   @gz_files.each do |file|
     upload_dest = "Saficite/#{File.basename(file, '.*')}"
-    obj = s3.bucket(@bucket).object("#{upload_dest}/#{File.basename(file)}")
+    obj = s3.bucket(config[:bucket]).object("#{upload_dest}/#{File.basename(file)}")
 
     upload_presigned(obj, file)
 

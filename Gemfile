@@ -4,4 +4,5 @@ source "https://rubygems.org" do
   gem "rubyzip"
   gem "aws-sdk"
   gem "aws-sdk-resources"
+  gem "yaml"
 end
