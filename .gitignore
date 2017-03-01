@@ -1,4 +1,7 @@
-config.yml
+.DS_Store
 .tag*
 
+config.yml
 Gemfile.lock
+
+/sources
