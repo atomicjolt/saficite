@@ -27,10 +27,8 @@ def extract_zip_archives(file)
       if(!File.exist?(f_path))
         zip_file.extract(f, f_path)
       end
-      if(File.exist?(f_path))
-        @gz_files.push(f_path)
-        print "\r#{@gz_files.size} files found. "
-      end
+      @gz_files.push(f_path)
+      print "\r#{@gz_files.size} files found. "
     }
     print "\n"
   }
