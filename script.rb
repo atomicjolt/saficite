@@ -1,9 +1,4 @@
 # !/usr/bin/env ruby
-# prerequisites
-# -------------
-# gem install 'zip'
-# gem install 'aws-sdk'
-# gem install 'aws-sdk-resources'
 require 'rubygems'
 require 'zip'
 require 'aws-sdk'
