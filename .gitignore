@@ -5,3 +5,5 @@ config.yml
 Gemfile.lock
 
 /sources
+/sources_queue
+/sources_complete

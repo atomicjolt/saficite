@@ -60,7 +60,7 @@ def upload_presigned(obj, file)
   body = file
   # This is the contents of your object. In this case, it's a simple string.
 
-  Net::HTTP.start(url.host) do |http|
+  Net::HTTP.start(url.host, read_timeout: 1000) do |http|
     http.send_request(
       "PUT",
       url.request_uri,
@@ -80,8 +80,14 @@ def upload_files(archive)
   index = 0
 
   @gz_files.each do |file|
+    begin # Sanitize filenames.
+      file_name = File.basename(file).encode("UTF-8")
+    rescue Encoding::UndefinedConversionError
+      file_name = File.basename(file).force_encoding("UTF-8")
+    end
+
     upload_dest = File.join(config[:bucket_dir], File.basename(archive, ".*"))
-    obj = s3.bucket(config[:bucket]).object(File.join(upload_dest, File.basename(file)))
+    obj = s3.bucket(config[:bucket]).object(File.join(upload_dest, file_name))
 
     upload_presigned(obj, file)
 
@@ -95,7 +101,7 @@ end
 
 def aggregate_files
   print "\n"
-  
+
   Dir.foreach(@sources) do |file|
     next unless File.extname(file) == ".zip"
 
@@ -103,7 +109,7 @@ def aggregate_files
     upload_files(file)
   end
 
-  remove_entry_secure(@temp_dir)
+  FileUtils.remove_entry_secure(@temp_dir)
 end
 
 aggregate_files
